@@ -1,0 +1,13 @@
+
+  <h1>TEST</h1>
+<div *ngIf="loading">
+    Loading...
+  </div>
+  <div *ngIf="error">
+    {{error}}
+  </div>
+  <div *ngIf="lists">
+    <div *ngFor="let list of lists">
+      <p>{{ list.id }}: {{ list.heading }}</p>
+    </div>
+  </div>
