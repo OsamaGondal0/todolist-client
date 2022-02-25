@@ -23,35 +23,42 @@ export class LoginService {
         });
     }
    async login(email:string,password:string):Promise<UserToken>{
-        let permission="DataEngineer"
-        let mutation = gql `
-        mutation( $email: String!,$password: String!){
-            login(  email:$email,password:$password){
-                user{
-                    username 
-                    email
-                }
-                token
-                lists{
-                    id
-                }
+        let mutation = gql`
+        mutation LoginUser($email: String!,$password: String!){
+          login(email:$email,password:$password){
+            token,
+            user{
+              username,
+              email
+            },
+            lists{
+              id,
+              name,
+              description
             }
-        }`;
-        let variables= { email,password,permission};
+          }
+        }
+        `;
+        let variables= { email,password};
         let res=await this.qmService.Mutation( mutation, variables);
         this.accountLoggedIn.next(res)
         return res 
     }
 
-    async loginAccountWithPermission(listId:any):Promise<TokenPermission> {
-        let mutation = gql `
-        mutation( $accountId: ID!){
-            loginListWithPermission(  listId:$listtId){
+    async loginListWithPermission(listId:any):Promise<TokenPermission> {
+        let mutation = gql`
+        mutation( $listId: ID!){
+            loginListWithPermission(  listId:$listId){
                 token
-                permission {
-                    userId
-                    listId
-                }
+                    user{
+                        username
+                        email
+                        id
+                    }
+                    list{
+                        id  
+                    }
+                
             }
         }`;
         let variables= { listId};

@@ -10,4 +10,8 @@
     </label>
   <button type="submit">Login</button>
   </form>
-  
+  <div *ngIf="userToken">
+    <div *ngFor="let list of userToken.lists">
+      <a target="_blank" href={{list.url}}>{{ list.id }}: {{ list.name }}</a>
+    </div>
+  </div>

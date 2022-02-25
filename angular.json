@@ -74,6 +74,9 @@
               "browserTarget": "todolist-client:build:development"
             }
           },
+          "options": {
+            "disableHostCheck": true
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {

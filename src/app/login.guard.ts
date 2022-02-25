@@ -13,7 +13,7 @@ export class LoginGuard implements CanActivate {    // Prevent user to visit Aut
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot) {
 
-        if (!localStorage.getItem('userToken')) {
+        if (!localStorage.getItem('mainToken')||!localStorage.getItem('userToken')) {
             this.router.navigate(['']);
             return false; // false means don't allow to further navigate to respective route
         }

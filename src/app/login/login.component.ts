@@ -1,15 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
-
-const loginMutation = gql`
-mutation LoginUser($email: String!,$password: String!){
-  login(email:$email,password:$password){
-    token
-  }
-}
-`;
-
+import { environment } from 'src/environments/environment';
+import { LoginService } from './login.service';
 @Component({
   selector: 'login',
   templateUrl: './login.component.html',
@@ -20,30 +14,37 @@ export class LoginComponent implements OnInit {
     email: new FormControl(''),
     password: new FormControl(''),
   });
-  
-  constructor(private apollo: Apollo) {}
-
-  ngOnInit() {
+  subdomain: string;
+  userToken: any;
+  currentList: any;
+  constructor(private apollo: Apollo, private router: Router, private loginService: LoginService) {
+    this.subdomain = window.location.host.split('.')[0];
   }
-  onSubmit() {
-    
-    // console.log(this.loginForm.value.email, this.loginForm.value.password);
-     this.apollo.mutate({
-      mutation: loginMutation,
-      variables: {
-        email: this.loginForm.value.email,
-        password: this.loginForm.value.password
+
+  ngOnInit() { }
+  async onSubmit() {
+    await this.loginService.login(this.loginForm.value.email, this.loginForm.value.password).then(
+      async (data: any) => {
+        this.userToken = data;
+        this.userToken.lists.forEach((element: any) => {
+          element.domainName = element.name.toLowerCase().replace(' ', '');
+          element.url = `${environment.redirect_protocol}://${element.domainName}.${environment.redirect_domain}`
+        });
+        this.currentList = this.userToken.lists.find((element: any) => { return element.domainName == this.subdomain; });
+        localStorage.setItem('userToken', data.token);
+        if (this.currentList) { await this.loginWithListAccess(this.currentList.id); }
       }
-    })
-      .subscribe({
-        next({data}:any) { console.log( data.login.token); 
-          localStorage.setItem('userToken', data.login.token);},
-          
-        error(error){
-          alert(error);
-        },
-        complete(){alert('Login Succesful');}
-      });
-      
+    )
+      .catch(err => { console.log('error', err) });
+
+  }
+  async loginWithListAccess(listId: any) {
+    await this.loginService.loginListWithPermission(listId)
+      .then(
+        async (data: any) => {
+          localStorage.setItem('mainToken', data.token);
+          this.router.navigate(['list', listId]);
+        })
+      .catch(err => { console.log('list login ', err) })
   }
 }

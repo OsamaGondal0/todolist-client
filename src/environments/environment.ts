@@ -3,6 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+  graphQl_Url: ' http://localhost:4201',
+  frontend_url: 'http://localhost:4200',
+  wsSubscriptionUrl: 'ws://localhost:4201/graphql',
+  redirect_domain:'localhost:4200',
+  redirect_protocol:'http',
   production: false
 };
 
