@@ -63,9 +63,21 @@ export class LoginService {
         }`;
         let variables= { listId};
         let res= await this.qmService.Mutation( mutation, variables);
-        this.accountLoggedIn.next(res)
         return res
-    
+    }
+    async creatList(name:string,description:string):Promise<TokenPermission> {
+        let mutation = gql`
+        mutation( $name: String!, $description: String!){
+            addNewList(  name:$name , description:$description){
+                id
+                name
+                description
+                
+            }
+        }`;
+        let variables= { name,description};
+        let res= await this.qmService.Mutation( mutation, variables);
+        return res
     }
     async updateUser(userId: number, name: string,image_url:string,password?: string)   {
         let mutation = gql`
@@ -91,12 +103,13 @@ export class LoginService {
         window.location.replace("/login");
     }
 
-    async getAccountsforUser(): Promise<any> {
+    async getListsbyUser(): Promise<any> {
         let query = gql`
             query{
-                getAccountsforUser    {
-                    organization
-                    is_template
+                getListsByUser{
+                    id
+                    name
+                    description
                 }
             }
         `;

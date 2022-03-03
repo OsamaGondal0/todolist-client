@@ -1,16 +1,16 @@
-import { Component, OnInit, OnDestroy} from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Apollo, gql } from 'apollo-angular';
 import * as moment from 'moment';
-
-
+import { Task } from '../models/Task.model';
+import { TaskService } from './tasks.service';
 
 const taskQuerry = gql`
-query getTasksByListId($taskId:ID!){
-  getTasksByListId(taskId:$taskId){
+query getTasks{
+  getTasks{
     id
-    taskId
+    listId
     task
     description
     deadline
@@ -25,41 +25,93 @@ query getTasksByListId($taskId:ID!){
   styleUrls: ['./tasks.component.css']
 })
 export class TasksComponent implements OnInit {
-  tasks: any[] | undefined;
-  date : any | undefined;
-  loading = true;
-  error: any;
-  id: number|any;
-  private sub: any;
 
-  constructor(private route: ActivatedRoute,private apollo: Apollo) {}
+  newTask = new FormGroup({
+    task: new FormControl(''),
+    description: new FormControl(''),
+    deadline: new FormControl('')
+  });
+  newUserWithPermission = new FormGroup({
+    user: new FormControl(''),
+  });
+  tasks!: Task[];
+  filteredTasks!: Task[]
+  usersWithoutPermission!: any[];
+  error: any;
+  constructor(private route: ActivatedRoute, private apollo: Apollo, private taskService: TaskService) { }
 
   ngOnInit() {
-    this.date = moment('2022-02-16T19:00:00.000Z').fromNow();
     this.onLoad();
-   }
-    onLoad() {
-      this.sub = this.route.params.subscribe(params => {
-        this.id = +params['id'];})
-      const observer = {
-        next:(data:any) =>{ this.tasks=data.data.getTasksByListId; this.loading = false; },
-        error:(error:any)=>{ this.error = error;this.loading = false; },
-        complete:()=>{console.log('load complete')}
+    this.taskService.getUsersWithoutAccess().then(
+      async (data: any) => {
+        this.usersWithoutPermission = data;
       }
-     const subscription =this.apollo
-        .query({
-          query: taskQuerry,
-          variables:{
-            taskId: this.id
-          }
-        })
-        .subscribe(
-          observer
-              ).unsubscribe;
-        }
-  
+    );
+  }
+
+  addUserToList() {
+    console.log(this.newUserWithPermission.value.user.id);
+    this.taskService.addNewPermission(this.newUserWithPermission.value.user.id).then(
+      async (data: any) => {
+        //console.log(data);
+        //add code to remove added user from array
+      })
+      .catch(({ errors }) => { alert(errors[0].message) })
+  }
+  onNewTask() {
+    console.log(this.newTask.value.task, this.newTask.value.description, this.newTask.value.deadline)
+    this.taskService.createTask(this.newTask.value.task, this.newTask.value.description, this.newTask.value.deadline).then(
+      async (data: any) => {
+        console.log(data);
+        this.tasks.push(data);
+      })
+      .catch(({ errors }) => { alert(errors[0].message) })
+      ;
+  }
+  onLoad() {
+    const observer = {
+      next: ({ data }: any) => {
+        let tempTask = JSON.stringify(data.getTasks);
+
+        this.tasks = JSON.parse(tempTask);
+        this.filteredTasks = [...this.tasks];
+        this.setIntervalTimer();
+
+      },
+      error: ({ errors }: any) => { alert(errors[0].message) },
+      complete: () => { console.log('load complete') }
+    }
+    const subscription = this.apollo
+      .query({
+        query: taskQuerry,
+      })
+      .subscribe(
+        observer
+      ).unsubscribe;
+
+  }
+  setIntervalTimer() {
+    this.setTimer();
+  }
+
+  setTimer() {
+    this.filteredTasks.map((element) => {
+      let durationMilliSeconds = moment(element.deadline).diff(moment())
+      let timeFromDeadline = durationMilliSeconds > 0 ? moment.duration(durationMilliSeconds, 'milliseconds') : moment.duration(-durationMilliSeconds, 'milliseconds');
+      let days = moment.duration(timeFromDeadline).days(),
+        hours = moment.duration(timeFromDeadline).hours(),
+        minutes = moment.duration(timeFromDeadline).minutes(),
+        seconds = moment.duration(timeFromDeadline).seconds();
+      element.timer = `${durationMilliSeconds < 0 ? "Due By" : "Passed Due By"} ${days} days,${hours} hrs, ${minutes} m, ${seconds} s`
+    })
+  }
+  applyFilter() {
+    this.filteredTasks = this.tasks.filter((s) => { console.log(s); return s.timer?.includes('Due By'); })
+    console.log('filtered data', this.filteredTasks);
+  }
+
+
   ngOnDestroy() {
-    this.sub.unsubscribe();
   }
 }
 

@@ -1,5 +1,5 @@
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
+<div *ngIf="!loggedIn">
+  <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
     <label>
       Email:
       <input type="text" formControlName="email">
@@ -10,8 +10,20 @@
     </label>
   <button type="submit">Login</button>
   </form>
-  <div *ngIf="userToken">
-    <div *ngFor="let list of userToken.lists">
+</div>
+  <div *ngIf="loggedIn">
+    <form [formGroup]="newList" (ngSubmit)="onCreateList()">
+      <label>
+        name:
+        <input type="text" formControlName="name">
+      </label>
+    <label>
+        description:
+        <input type="text" formControlName="description">
+      </label>
+    <button type="submit">Add new list</button>
+    </form>
+    <div *ngFor="let list of lists">
       <a target="_blank" href={{list.url}}>{{ list.id }}: {{ list.name }}</a>
     </div>
   </div>

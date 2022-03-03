@@ -3,9 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { TasksComponent } from './tasks/tasks.component';
 import { LoginGuard } from './login.guard';
+import { LoggedInGuard } from './loggedIn.guard';
 const routes: Routes = [{
   path:'',
-  component:LoginComponent
+  component:LoginComponent,
+  canActivate: [LoggedInGuard]
 },{
   path:'tasks',
   component:TasksComponent,

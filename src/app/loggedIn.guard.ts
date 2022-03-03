@@ -4,7 +4,7 @@ import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from
 @Injectable({
     providedIn: 'root'
 })
-export class LoginGuard implements CanActivate {    // Prevent user to visit Auth module if the user has userAccountToken available.
+export class LoggedInGuard implements CanActivate {    // Prevent user to visit Auth module if the user has userAccountToken available.
 
     constructor(
         private router: Router,
@@ -13,8 +13,8 @@ export class LoginGuard implements CanActivate {    // Prevent user to visit Aut
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot) {
 
-        if (!localStorage.getItem('mainToken')) {
-            this.router.navigate(['']);
+        if (localStorage.getItem('mainToken') && localStorage.getItem('userToken')) {
+            this.router.navigate(['tasks']);
             return false; // false means don't allow to further navigate to respective route
         }
         return true; // allow to navigate

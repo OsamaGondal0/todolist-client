@@ -14,28 +14,63 @@ export class LoginComponent implements OnInit {
     email: new FormControl(''),
     password: new FormControl(''),
   });
+  newList = new FormGroup({
+    name: new FormControl(''),
+    description: new FormControl(''),
+  });
   subdomain: string;
+  loggedIn: boolean = false;
+  lists!: any[];
   userToken: any;
   currentList: any;
   constructor(private apollo: Apollo, private router: Router, private loginService: LoginService) {
     this.subdomain = window.location.host.split('.')[0];
   }
 
-  ngOnInit() { }
-  async onSubmit() {
+  ngOnInit() {
+    this.checkLoggedIn();
+   }
+   async checkLoggedIn() {
+     if(localStorage.getItem('userToken')!=null)
+     {this.loggedIn=true;
+       await this.loginService.getListsbyUser().then(
+      async (data:any) =>{
+        this.lists = data;
+        this.lists.forEach((element: any) => {
+          element.domainName = element.name.toLowerCase().replaceAll(' ', '');
+          element.url = `${environment.redirect_protocol}://${element.domainName}.${environment.redirect_domain}`
+        }); 
+      }
+     )}
+   }
+  async onLogin() {
     await this.loginService.login(this.loginForm.value.email, this.loginForm.value.password).then(
       async (data: any) => {
-        this.userToken = data;
-        this.userToken.lists.forEach((element: any) => {
-          element.domainName = element.name.toLowerCase().replace(' ', '');
+        this.loggedIn = true;
+        this.lists = data.lists;
+        this.lists.forEach((element: any) => {
+          element.domainName = element.name.toLowerCase().replaceAll(' ', '');
           element.url = `${environment.redirect_protocol}://${element.domainName}.${environment.redirect_domain}`
-        });
-        this.currentList = this.userToken.lists.find((element: any) => { return element.domainName == this.subdomain; });
-        localStorage.setItem('userToken', data.token);
+        }); 
+        if(this.subdomain != environment.redirect_domain){
+        this.currentList = this.lists.find((element: any) => { return element.domainName == this.subdomain; });
         if (this.currentList) { await this.loginWithListAccess(this.currentList.id); }
+        else{
+          throw new Error("User doesnt have access to this list");
+        }
       }
-    )
-      .catch(err => { console.log('error', err) });
+    }
+    ).catch(({errors}) => {alert(errors[0].message) });
+
+  }
+
+  async onCreateList() {
+    await this.loginService.creatList(this.newList.value.name, this.newList.value.description).then(
+      async (data: any) => {
+        data.url = `${environment.redirect_protocol}://${data.name.toLowerCase().replaceAll(' ', '')}.${environment.redirect_domain}`        
+        this.lists.push(data);
+      }
+    ).catch(({errors}) => {alert(errors[0].message)  });
 
   }
   async loginWithListAccess(listId: any) {
@@ -43,8 +78,8 @@ export class LoginComponent implements OnInit {
       .then(
         async (data: any) => {
           localStorage.setItem('mainToken', data.token);
-          this.router.navigate(['list', listId]);
+          this.router.navigate(['tasks']);
         })
-      .catch(err => { console.log('list login ', err) })
+      .catch(({errors}) => {alert(errors[0].message) })
   }
 }

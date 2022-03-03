@@ -1,13 +1,45 @@
-
-  <h1>{{date}}</h1>
-  <div *ngIf="loading">
-      Loading...
-    </div>
-    <div *ngIf="error">
-      {{error}}
-    </div>
-    <div *ngIf="tasks">
-      <div *ngFor="let task of tasks">
-        <p>{{ task.task }}: <br>      {{task.description}} <br>{{task.completed}}<br>         {{task.deadline}}   </p>
-      </div>
-    </div>
+<form [formGroup]="newUserWithPermission" (ngSubmit)="addUserToList()">
+  <div >
+    <select formControlName="user">
+      <option value="">Choose User</option>
+      <option *ngFor="let user of usersWithoutPermission" [ngValue]="user">
+        {{ user.username }}
+      </option>
+    </select>
+    <!-- error block -->
+    <button type="submit" >
+      Submit
+    </button>
+  </div>
+</form>
+<div *ngIf="error">
+  {{error}}
+</div>
+<div *ngIf="tasks">
+  <div *ngFor="let task of filteredTasks">
+    <p>{{ task.task }}:
+      <br>{{task.description}}
+      <br>{{task.completed}}<br>
+      {{task.timer}}
+    </p>
+    <label>
+      Completed
+    <input type="checkbox" [checked]="task.completed"/>
+  </label>
+  </div>
+</div>
+<form [formGroup]="newTask" (ngSubmit)="onNewTask()">
+  <label>
+    task:
+    <input type="text" formControlName="task">
+  </label>
+  <label>
+    description:
+    <input type="text" formControlName="description">
+  </label>
+  <label>
+    deadline:
+    <input type="datetime-local" formControlName="deadline">
+  </label>
+  <button type="submit">Add new task</button>
+</form>
