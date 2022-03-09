@@ -1,0 +1,41 @@
+<button type="button" (click)="onLogout()">Log Out!</button>
+
+<form [formGroup]="newUser" (ngSubmit)="onCreateUser()" #form="ngForm">
+    <label>
+      email:
+      <input type="text" formControlName="email">
+    </label>
+    <label>
+      username:
+      <input type="text" formControlName="username">
+    </label>
+  <label>
+      password:
+      <input type="text" formControlName="password">
+    </label>
+  <button type="submit" [disabled]="!form.valid">Add new user</button>
+  </form>
+
+
+
+
+<form [formGroup]="newList" (ngSubmit)="onCreateList()" #form="ngForm">
+    <label>
+      name:
+      <input type="text" formControlName="name">
+    </label>
+  <label>
+      description:
+      <input type="text" formControlName="description">
+    </label>
+  <button type="submit" [disabled]="!form.valid">Add new list</button>
+  </form>
+
+
+
+
+
+  <div *ngFor="let list of lists">
+    <a target="_blank" href={{list.url}}>{{ list.id }}: {{ list.name }}</a>
+  </div>
+ 

@@ -1,0 +1,9 @@
+<div>Filter:&nbsp;&nbsp;</div>
+<div>
+    <a href="#incomplete" [routerLink]="['/tasks']" [queryParams]="{filter:'incomplete'}" routerLinkActive="active">Incomplete&nbsp;&nbsp;</a>
+
+    <a [routerLink]= "['/tasks']" [queryParams]="{filter:'completed'}" routerLinkActive="active"> Complete&nbsp;&nbsp;</a>
+
+    <a [routerLink]= "['/tasks']" [queryParams]="{filter:'late'}" routerLinkActive="active"> Past Due&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div><button type="button" (click)="onLogout()">Log Out!</button></div>
