@@ -6,8 +6,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import{MatDialog, MatDialogModule} from '@angular/material/dialog' 
+import {MatToolbarModule} from '@angular/material/toolbar'
 import { LoginModule } from './login/login.module';
-import {Apollo, APOLLO_OPTIONS,gql} from 'apollo-angular'
+import {Apollo, ApolloModule, APOLLO_OPTIONS,gql} from 'apollo-angular'
 //import {  HttpLinkModule } from "apollo-angular-link-http";
 import { HttpClientModule } from '@angular/common/http';
 import {  InMemoryCache } from '@apollo/client/core';
@@ -22,11 +23,17 @@ import { LoginGuard } from './login.guard';
 import {WebSocketLink} from '@apollo/client/link/ws';
 import {split, ApolloClientOptions} from '@apollo/client/core';
 import {getMainDefinition} from '@apollo/client/utilities';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations'
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { HomeModule } from './home/home.module';
 
 import { TasksModule } from './tasks/tasks.module';
+import { NotificationModule } from './notification/notification.module';
 import {ApolloLink} from '@apollo/client/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NotificationComponent } from './notification/notification.component';
+import { LoggedInWithListGuard } from './loggedInWithList.guard';
+import { LoggedInGuard } from './loggedIn.guard';
+import { RouterModule } from '@angular/router';
 // import {HttpLink, HttpLinkModule} from 'apollo-angular/http';
 
 
@@ -37,14 +44,17 @@ import { NotificationComponent } from './notification/notification.component';
     AppComponent
   ],
   imports: [
-    BrowserModule,
-    LoginModule,
-    TasksModule,
-    HttpClientModule,
     AppRoutingModule,
+    BrowserModule,
+    HttpClientModule,
+    MatToolbarModule,
     MatDialogModule,
-    BrowserAnimationsModule
-  ],
+    BrowserAnimationsModule,
+    ReactiveFormsModule,
+    FormsModule,
+    ApolloModule,
+    NotificationModule,
+    ],
   providers: [
     {
       provide: APOLLO_OPTIONS,
@@ -97,41 +107,12 @@ import { NotificationComponent } from './notification/notification.component';
         };
       },
       deps: [HttpLink],
-    }, LoginGuard
+    },LoggedInWithListGuard,LoginGuard,LoggedInGuard
   ],
   bootstrap: [AppComponent]
 })
 export class AppModule{
   constructor(apollo: Apollo,public dialog: MatDialog) {
-    console.log('module Loaded');
-    apollo.subscribe({
-      query: COMMENTS_SUBSCRIPTION,
-      
-      /*
-        accepts options like `errorPolicy` and `fetchPolicy`
-      */
-    }).subscribe(({data}:any) => {
-      if (data?.permissionToNewList) {
-        this.openDialog(data.permissionToNewList)
-        //, data.permissionToNewList);
-      }
-    });
+
   }
-  openDialog(results:any) {
-    const dialogRef = this.dialog.open(NotificationComponent,{data:results});
-    dialogRef.afterOpened().subscribe(_ => {
-      setTimeout(() => {
-         dialogRef.close();
-      }, 15000)
-    })
-  }
-  
 }
-const COMMENTS_SUBSCRIPTION = gql`
-  subscription permissionToNewList{
-    permissionToNewList{
-      userId
-      listId
-    }
-  }
-`;

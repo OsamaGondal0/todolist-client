@@ -11,13 +11,13 @@ export class LoginGuard implements CanActivate {    // Prevent user to visit Aut
     ) { }
     canActivate(
         next: ActivatedRouteSnapshot,
-        state: RouterStateSnapshot) {
-
-        if (!localStorage.getItem('mainToken')||!localStorage.getItem('userToken')) {
-            this.router.navigate(['']);
-            return false; // false means don't allow to further navigate to respective route
-        }
-        return true; // allow to navigate
-    }
+        state: RouterStateSnapshot){
+            console.log('inside the guard');
+            if ( localStorage.getItem('userToken')) {
+                this.router.navigate(['home']);
+                return false; // false means don't allow to further navigate to respective route
+            }
+            return true; // allow to navigate
+        } 
 
 }

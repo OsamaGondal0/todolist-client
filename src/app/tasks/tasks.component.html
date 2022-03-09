@@ -1,3 +1,4 @@
+<router-outlet></router-outlet>
 <form [formGroup]="newUserWithPermission" (ngSubmit)="addUserToList()">
   <div >
     <select formControlName="user">
@@ -24,11 +25,34 @@
     </p>
     <label>
       Completed
-    <input type="checkbox" [checked]="task.completed"/>
+    <input type="checkbox" [(ngModel)]="task.completed" (click)="onClick(task)"/>
   </label>
+  <br>
+  <form [formGroup]="sendToSalesforce" (ngSubmit)="onSendToSalesForce(task.id)">
+    <label>
+      Send Task to SalesForce<br>
+    </label>
+    <label>
+      UserName:
+      <input type="text" formControlName="username">
+    </label>
+    <label>
+      Password:
+      <input type="text" formControlName="password">
+    </label>
+    <label>
+      Token:
+      <input type="text" formControlName="token">
+    </label>
+    <button type="submit">Send to SalesForce</button>
+  </form>
   </div>
 </div>
 <form [formGroup]="newTask" (ngSubmit)="onNewTask()">
+  <br>
+  <label>
+    Create New Task<br>
+  </label>
   <label>
     task:
     <input type="text" formControlName="task">

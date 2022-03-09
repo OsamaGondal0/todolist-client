@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
 import { environment } from 'src/environments/environment';
-import { LoginService } from './login.service';
+import { LoginService,UserToken,TokenPermission } from './login.service';
+import { List } from '../models/List.model';
 @Component({
-  selector: 'login',
+  selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -14,40 +15,34 @@ export class LoginComponent implements OnInit {
     email: new FormControl(''),
     password: new FormControl(''),
   });
-  newList = new FormGroup({
-    name: new FormControl(''),
-    description: new FormControl(''),
-  });
   subdomain: string;
-  loggedIn: boolean = false;
-  lists!: any[];
-  userToken: any;
+  lists: List[]|undefined = [];
   currentList: any;
   constructor(private apollo: Apollo, private router: Router, private loginService: LoginService) {
     this.subdomain = window.location.host.split('.')[0];
   }
 
   ngOnInit() {
+    console.log("ssfsdf");
     this.checkLoggedIn();
    }
    async checkLoggedIn() {
-     if(localStorage.getItem('userToken')!=null)
-     {this.loggedIn=true;
-       await this.loginService.getListsbyUser().then(
-      async (data:any) =>{
-        this.lists = data;
-        this.lists.forEach((element: any) => {
-          element.domainName = element.name.toLowerCase().replaceAll(' ', '');
-          element.url = `${environment.redirect_protocol}://${element.domainName}.${environment.redirect_domain}`
-        }); 
-      }
-     )}
-   }
+    if(localStorage.getItem('userToken')!=null)
+    { await this.loginService.getListsbyUser().then(
+     async (data:List[]) =>{
+       this.lists = data;
+       this.lists.forEach((element: any) => {
+         element.domainName = element.name.toLowerCase().replaceAll(' ', '');
+         element.url = `${environment.redirect_protocol}://${element.domainName}.${environment.redirect_domain}`
+       }); 
+     }
+    )}
+  }
   async onLogin() {
+    
     await this.loginService.login(this.loginForm.value.email, this.loginForm.value.password).then(
-      async (data: any) => {
-        this.loggedIn = true;
-        this.lists = data.lists;
+      async (data: UserToken) => {
+        this.lists = data.lists ? data.lists : [];
         this.lists.forEach((element: any) => {
           element.domainName = element.name.toLowerCase().replaceAll(' ', '');
           element.url = `${environment.redirect_protocol}://${element.domainName}.${environment.redirect_domain}`
@@ -57,29 +52,21 @@ export class LoginComponent implements OnInit {
         if (this.currentList) { await this.loginWithListAccess(this.currentList.id); }
         else{
           throw new Error("User doesnt have access to this list");
-        }
+        } 
       }
+      else{
+        this.router.navigate(['home'])}
     }
-    ).catch(({errors}) => {alert(errors[0].message) });
+    ).catch((errors) => {this.router.navigate(['home']);alert(errors); });
 
   }
-
-  async onCreateList() {
-    await this.loginService.creatList(this.newList.value.name, this.newList.value.description).then(
-      async (data: any) => {
-        data.url = `${environment.redirect_protocol}://${data.name.toLowerCase().replaceAll(' ', '')}.${environment.redirect_domain}`        
-        this.lists.push(data);
-      }
-    ).catch(({errors}) => {alert(errors[0].message)  });
-
-  }
-  async loginWithListAccess(listId: any) {
+  async loginWithListAccess(listId: number) {
     await this.loginService.loginListWithPermission(listId)
       .then(
-        async (data: any) => {
+        async (data: TokenPermission) => {
           localStorage.setItem('mainToken', data.token);
           this.router.navigate(['tasks']);
         })
-      .catch(({errors}) => {alert(errors[0].message) })
+      .catch((errors) => {alert(errors) })
   }
 }

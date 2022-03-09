@@ -8,8 +8,8 @@ import { setContext } from '@apollo/client/link/context';
 import { CommonModule } from '@angular/common';
 import { LoginComponent } from './login.component';
 import { ReactiveFormsModule } from '@angular/forms';
-
-const uri = '/graphql';
+import { LoginRoutingModule } from './login-routing.module';
+import { Router, RouterModule } from '@angular/router';
 
 
 @NgModule({
@@ -17,10 +17,10 @@ const uri = '/graphql';
     LoginComponent
   ],
   exports: [
-    HttpClientModule,
-    ApolloModule,
+    LoginComponent
   ],
   imports: [
+    LoginRoutingModule,
     CommonModule,
     ReactiveFormsModule
   ],

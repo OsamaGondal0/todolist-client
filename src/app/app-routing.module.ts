@@ -1,21 +1,49 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { TasksComponent } from './tasks/tasks.component';
 import { LoginGuard } from './login.guard';
 import { LoggedInGuard } from './loggedIn.guard';
-const routes: Routes = [{
-  path:'',
-  component:LoginComponent,
-  canActivate: [LoggedInGuard]
-},{
-  path:'tasks',
-  component:TasksComponent,
-  canActivate: [LoginGuard]
-}];
+import { LoggedInWithListGuard } from './loggedInWithList.guard';
+import { Route, RouterModule } from "@angular/router";
 
+
+
+
+const appRoutes: Route[] = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'home'
+  },
+  {
+    path: '',
+    children: [
+      {
+        path: 'login',
+        loadChildren: () =>
+          import("./login/login.module").then((m) => m.LoginModule),
+          canActivate:[LoginGuard]
+      },
+      {
+        path: 'home',
+        loadChildren: () =>
+          import(
+            "./home/home.module"
+          ).then((m) => m.HomeModule),
+          canActivate: [LoggedInGuard]
+      },
+      {
+              path: "tasks",
+              loadChildren: () =>
+                import("./tasks/tasks.module").then(
+                  (m) => m.TasksModule
+                ),
+              pathMatch: "full",
+              canActivate: [LoggedInWithListGuard]
+      },
+    ]
+  }
+]
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  imports: [RouterModule.forRoot(appRoutes)],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
