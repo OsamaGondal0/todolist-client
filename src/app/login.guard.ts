@@ -12,7 +12,6 @@ export class LoginGuard implements CanActivate {    // Prevent user to visit Aut
     canActivate(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot){
-            console.log('inside the guard');
             if ( localStorage.getItem('userToken')) {
                 this.router.navigate(['home']);
                 return false; // false means don't allow to further navigate to respective route

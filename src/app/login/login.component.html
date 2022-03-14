@@ -1,14 +1,24 @@
+<div class="justify-center justify-items-center grid grid-cols-1 mt-52">
+  <div class=" m-4 bg-grey-700 grid grid-cols-1 content-center justify-items-center ">
+    <span class=""> Welcome to Todo-List</span>
+    <span class=""> Login to Continue to you lists!!</span>
+  </div>
 
-  <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-    <label>
-      Email:
-      <input type="text" formControlName="email">
-    </label>
-  <label>
-      Password:
-      <input type="text" formControlName="password">
-    </label>
-  <button type="submit">Login</button>
+  <form class='justify-between justify-items-center' [formGroup]="loginForm" (ngSubmit)="onLogin()" #login=ngForm>
+    <div class="grid grid-rows-1 grid-flow-col">
+      <input  class="m-4 h-8 w-100 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center"
+       type="email" placeholder="Enter your email" formControlName="email">
+      <input class="m-4 h-8 w-100 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center" 
+      type="password" placeholder="Enter your Password" formControlName="password">
+    </div>
+    <div class="grid  justify-items-center pt-2">
+      <button
+        class=" font-semibold  h-8 w-20 rounded-2xl text-center  pl-2 border-2"
+        [disabled]="!login.valid"
+        [ngClass] = "{'opacity-50 cursor-not-allowed bg-white text-gray-700 border-red-500 ' : !login.valid, 'bg-green-100 hover:text-green-500 hover:bg-gray-100 pr-2 text-green-700':login.valid }"
+        type="submit">
+        Login
+      </button>
+    </div>
   </form>
-   
-    
+</div>

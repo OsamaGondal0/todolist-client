@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Apollo, gql } from 'apollo-angular';
 import * as moment from 'moment';
 import { Task } from '../models/Task.model';
@@ -16,23 +16,23 @@ import { filter } from 'rxjs';
 export class TasksComponent implements OnInit {
 
   newTask = new FormGroup({
-    task: new FormControl(''),
-    description: new FormControl(''),
-    deadline: new FormControl('')
+    task: new FormControl('',Validators.required),
+    description: new FormControl('',Validators.required),
+    deadline: new FormControl('',Validators.required)
   });
   newUserWithPermission = new FormGroup({
-    user: new FormControl(''),
+    user: new FormControl('',Validators.required),
   });
   sendToSalesforce = new FormGroup({
-    username:  new FormControl(''),
-    password:  new FormControl(''),
-    token:  new FormControl(''),
+    username:  new FormControl('',Validators.required),
+    password:  new FormControl('',Validators.required),
+    token:  new FormControl('',Validators.required),
   })
   filter!: string;
   tasks!: Task[];
   filteredTasks!: Task[]
   usersWithoutPermission!: any[];
-  error: any;
+  
   constructor(private route: ActivatedRoute, private apollo: Apollo, private taskService: TaskService) { }
 
   ngOnInit() {
@@ -43,8 +43,6 @@ export class TasksComponent implements OnInit {
       (queryParams: Params) => { this.filter = queryParams['filter'] ? queryParams['filter'] : 'all';
       if(this.tasks!=null) this.filterTask(this.filter); }
     )
-    
-
   }
   async onSendToSalesForce(taskId:number){
     await this.taskService.sendToSalesForce(taskId,this.sendToSalesforce.value.username,this.sendToSalesforce.value.password,this.sendToSalesforce.value.token);
@@ -60,15 +58,15 @@ export class TasksComponent implements OnInit {
     this.taskService.addNewPermission(userId).then(
       async (data: any) => {
         this.usersWithoutPermission = this.usersWithoutPermission.filter((element)=>element.id!=userId)
+        this.newUserWithPermission.reset();
       })
       .catch(({ errors }) => { alert(errors[0].message) })
   }
   onNewTask() {
-    console.log(this.newTask.value.task, this.newTask.value.description, this.newTask.value.deadline)
     this.taskService.createTask(this.newTask.value.task, this.newTask.value.description, this.newTask.value.deadline).then(
       async (data: Task) => {
-        console.log(data);
         this.tasks.push(data);
+        this.newTask.reset();
       })
       .catch(({ errors }) => { alert(errors[0].message) })
       ;
@@ -76,7 +74,6 @@ export class TasksComponent implements OnInit {
   async onLoad() {
    await  this.taskService.getTasksforList().then(
       async (data: any) => {
-        console.log(data);
         this.tasks = JSON.parse(JSON.stringify(data));
       })
       .catch(({ errors }) => { alert(errors[0].message) });

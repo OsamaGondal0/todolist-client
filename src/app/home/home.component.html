@@ -1,41 +1,96 @@
-<button type="button" (click)="onLogout()">Log Out!</button>
-
-<form [formGroup]="newUser" (ngSubmit)="onCreateUser()" #form="ngForm">
-    <label>
-      email:
-      <input type="text" formControlName="email">
-    </label>
-    <label>
-      username:
-      <input type="text" formControlName="username">
-    </label>
-  <label>
-      password:
-      <input type="text" formControlName="password">
-    </label>
-  <button type="submit" [disabled]="!form.valid">Add new user</button>
-  </form>
+<div class="z-10 bg-white m-2 shadow-xl rounded-2xl flex justify-between">
+  <button mat-raised-button class="font-semibold text-grey-500 rounded-2xl p-4 ml-5 text-green-500  hover:bg-gray-300 bg-green-100 flex mb-1"
+  type="button" (click)="onHome()">Home</button>
+  <button mat-raised-button class="font-semibold text-grey-500 rounded-2xl p-4 mr-5 text-red-500  hover:bg-gray-300 bg-red-100 flex mb-1"
+    type="button" (click)="onLogout()">Log Out!</button>
+</div>
 
 
+<mat-accordion class="z-10">
+ <div class="">
+
+   <mat-expansion-panel class="w-auto shadow-xl flex justify-around justify-items-center bg-green-400 rounded-2xl p-2">
+     <mat-expansion-panel-header>
+       <mat-panel-title class='text-white pl-10 justify-center'>
+         Add New User
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <form class="flex justify-center  bg-green-100 rounded-lg" [formGroup]="newUser" (ngSubmit)="onCreateUser()" #formUser="ngForm">
+        <input
+        class="m-4 h-8 w-96 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center"
+        type="text" placeholder="Enter email for new user" formControlName="email">
+        
+        <input
+        class="m-4 h-8 w-96 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center"
+        type="text" placeholder="Enter username for new user" formControlName="username">
+        
+        <input
+        class=" m-4 h-8 w-96 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center"
+        type="text" placeholder="Enter password for new user" formControlName="password">
+        <div class="grid   items-center  ">
+          <button class=' font-semibold  h-8 w-32 rounded-2xl border-2 ' [disabled]="!formUser.valid"
+          [ngClass]="{'opacity-50 cursor-not-allowed bg-white text-gray-700 border-red-500 ': !formUser.valid, 'bg-white hover:text-green-500 hover:bg-gray-100 pr-2 text-green-500 border-green-500 ':formUser.valid }"
+          type="submit" [disabled]="!formUser.valid">Add new user</button>
+        </div>
+      </form>
+    </mat-expansion-panel>
+    </div>
+
+    <div class="mt-2 ">
+
+  <mat-expansion-panel class="w-auto shadow-xl flex justify-around justify-items-center bg-blue-400 rounded-2xl p-2">
+    <mat-expansion-panel-header >
+      <mat-panel-title class='text-white  pl-10 justify-center  '>
+        Add New List
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <form class="flex justify-center bg-blue-100 rounded-lg " [formGroup]="newList" (ngSubmit)="onCreateList()" #formList="ngForm">
+      
+      <input
+      class="m-4 h-8 w-96 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center "
+      type="text" placeholder="Enter name for new list" formControlName="name">
+      
+      
+      <input
+      class="m-4 h-8 w-96 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center"
+      type="text" placeholder="Enter description for new list" formControlName="description">
+      
+      <div class="grid   items-center  ">
+        <button class=' font-semibold  h-8 w-32  rounded-2xl border-2 ' [disabled]="!formList.valid"
+        [ngClass]="{'opacity-50 cursor-not-allowed bg-white text-gray-700 border-red-500 ': !formList.valid, 'bg-white hover:text-green-500 hover:bg-gray-100 pr-2 text-green-500 border-green-500 ':formList.valid }"
+        type="submit" [disabled]="!formList.valid">Add new list</button>
+      </div>
+    </form>
+    
+  </mat-expansion-panel>
+</div>
 
 
-<form [formGroup]="newList" (ngSubmit)="onCreateList()" #form="ngForm">
-    <label>
-      name:
-      <input type="text" formControlName="name">
-    </label>
-  <label>
-      description:
-      <input type="text" formControlName="description">
-    </label>
-  <button type="submit" [disabled]="!form.valid">Add new list</button>
-  </form>
+
+</mat-accordion>
+
+
+<div class="mt-6 w-auto grid grid-cols-1 justify-items-center rounded-xl " *ngIf="lists.length>0">
+  <a class="text-center text-white mb-4 bg-green-400 rounded-2xl p-5 w-3/4" *ngFor="let list of lists" target="_blank" href={{list.url}}>
+
+    <p>{{ list.name }} : {{list.description}}</p>
+    <div class="flex justify-center p-2">
+    </div>
+  </a>
+
+</div>
+<div class="flex justify-center mt-2 text-3xl text-green-400" *ngIf="lists.length==0" >
+  No List Found
+</div>
 
 
 
 
 
-  <div *ngFor="let list of lists">
-    <a target="_blank" href={{list.url}}>{{ list.id }}: {{ list.name }}</a>
-  </div>
- 
+
+
+
+
+
+
+

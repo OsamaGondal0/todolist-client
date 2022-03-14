@@ -4,6 +4,7 @@ import { TasksComponent } from './tasks.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TasksRoutingModule } from './task-routing.module';
 import { NavbarFilterComponent } from '../navbar-filter/navbar-filter.component';
+import { MatExpansionModule } from '@angular/material/expansion'; 
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { NavbarFilterComponent } from '../navbar-filter/navbar-filter.component'
     TasksRoutingModule,
     CommonModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    MatExpansionModule
   ]
 })
 export class TasksModule { }

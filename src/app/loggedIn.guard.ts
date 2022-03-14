@@ -12,9 +12,8 @@ export class LoggedInGuard implements CanActivate {    // Prevent user to visit 
     canActivate(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot) {
-            console.log('inside the loggedIn guard')
             if (localStorage.getItem('mainToken') && localStorage.getItem('userToken')) {
-                this.router.navigate(['tasks']);
+                this.router.navigate(['tasks'],{queryParams:{filter:'all'}});
                 return false; // false means don't allow to further navigate to respective route
             }
             else if (!localStorage.getItem('userToken')) {

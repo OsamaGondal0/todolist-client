@@ -1,69 +1,117 @@
 <router-outlet></router-outlet>
-<form [formGroup]="newUserWithPermission" (ngSubmit)="addUserToList()">
-  <div >
-    <select formControlName="user">
-      <option value="">Choose User</option>
-      <option *ngFor="let user of usersWithoutPermission" [ngValue]="user">
-        {{ user.username }}
-      </option>
-    </select>
-    <!-- error block -->
-    <button type="submit" >
-      Submit
-    </button>
+
+
+<mat-accordion>
+  <div class="">
+
+    <mat-expansion-panel class="w-auto shadow-xl flex justify-around justify-items-center bg-green-400 rounded-2xl p-2">
+      <mat-expansion-panel-header>
+        <mat-panel-title class='text-white pl-10 justify-center'>
+          Give access to another user
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <form class="flex justify-center mt-2" [formGroup]="newUserWithPermission" (ngSubmit)="addUserToList()"
+        #formNewUser="ngForm">
+        <div>
+          <select
+            class="m-4 h-10 w-100 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center"
+            formControlName="user">
+            <option value="">Choose User</option>
+            <option *ngFor="let user of usersWithoutPermission" [ngValue]="user">
+              {{ user.username }}
+            </option>
+          </select>
+          <!-- error block -->
+          <button class=' font-semibold  h-8 w-32  rounded-2xl border-2 ' [disabled]="!formNewUser.valid"
+            [ngClass]="{'opacity-50 cursor-not-allowed bg-white text-gray-700 border-red-500 ': !formNewUser.valid, 'bg-white hover:text-green-500 hover:bg-gray-100 pr-2 text-green-500 border-green-500 ':formNewUser.valid }"
+            [disabled]="!formNewUser.valid" type="submit">
+            Submit
+          </button>
+        </div>
+      </form>
+
+    </mat-expansion-panel>
   </div>
-</form>
-<div *ngIf="error">
-  {{error}}
+
+  <div class="mt-2 ">
+
+    <mat-expansion-panel class="w-auto shadow-xl flex justify-around justify-items-center bg-blue-400 rounded-2xl p-2">
+      <mat-expansion-panel-header>
+        <mat-panel-title class='text-white  pl-10 justify-center'>
+          Add new Task
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <form class="flex justify-center mt-2" [formGroup]="newTask" (ngSubmit)="onNewTask()" #formNewTask="ngForm">
+
+        <input
+          class="m-4 h-8 w-96 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center "
+          type="text" placeholder="Enter name for new task" formControlName="task">
+
+        <input
+          class="m-4 h-8 w-96 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center "
+          type="text" placeholder="Enter descriptionfor new list" formControlName="description">
+
+        <input
+          class="m-4 h-8 w-96 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center "
+          type="datetime-local" formControlName="deadline">
+
+        <div class="grid   items-center  ">
+          <button class=' font-semibold  h-8 w-32  rounded-2xl border-2 ' [disabled]="!formNewTask.valid"
+            [ngClass]="{'opacity-50 cursor-not-allowed bg-white text-gray-700 border-red-500 ': !formNewTask.valid, 'bg-white hover:text-green-500 hover:bg-gray-100 pr-2 text-green-500 border-green-500 ':formNewTask.valid }"
+            [disabled]="!formNewTask.valid" type="submit">
+            Add new task</button>
+        </div>
+      </form>
+
+
+    </mat-expansion-panel>
+  </div>
+
+</mat-accordion>
+
+
+<div class="mt-2 w-auto grid grid-cols-1 justify-items-center rounded-xl " *ngIf="tasks">
+  <div class="text-center text-white mb-4 bg-blue-400 rounded-2xl p-3 " *ngFor="let task of filteredTasks">
+    <p>{{ task.task }} : {{task.description}}</p>
+    <div class="flex justify-center p-2">
+      <p class=" w-72 bg-white rounded-3xl  p-2 ring-2  ring-offset-2 hover:ring-offset-4 m-2"
+        [ngClass]="{'text-red-500  ring-red-500   ': task.timer?.includes('past'), ' text-green-500 ring-green-500': task.timer?.includes('until') }">
+        {{task.timer}}
+      </p>
+    </div>
+
+  <div class="flex  grid-cols-2  justify-center  p-2">
+    <input id=`completed+{{task.id}}` class="hidden  z-10 p-2 mt-1 ml-1" type="checkbox" [(ngModel)]="task.completed" />
+    <label for=`completed+{{task.id}}` class="font-medium  text-white w-auto "
+    [ngClass]="{'line-through  ': task.completed}"
+    >{{task.completed ? 'Completed' : 'Incomplete'}}</label>
 </div>
-<div *ngIf="tasks">
-  <div *ngFor="let task of filteredTasks">
-    <p>{{ task.task }}:
-      <br>{{task.description}}
-      <br>{{task.completed}}<br>
-      {{task.timer}}
-    </p>
-    <label>
-      Completed
-    <input type="checkbox" [(ngModel)]="task.completed" (click)="onClick(task)"/>
-  </label>
-  <br>
-  <form [formGroup]="sendToSalesforce" (ngSubmit)="onSendToSalesForce(task.id)">
-    <label>
-      Send Task to SalesForce<br>
-    </label>
-    <label>
-      UserName:
-      <input type="text" formControlName="username">
-    </label>
-    <label>
-      Password:
-      <input type="text" formControlName="password">
-    </label>
-    <label>
-      Token:
-      <input type="text" formControlName="token">
-    </label>
-    <button type="submit">Send to SalesForce</button>
-  </form>
+    <mat-expansion-panel
+      class="w-auto flex justify-around justify-items-center bg-blue-400 rounded-2xl pt-2 pb-2">
+      <mat-expansion-panel-header>
+        <mat-panel-title class='text-white flex justify-center '>
+          Send To SalesForce
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <form [formGroup]="sendToSalesforce" (ngSubmit)="onSendToSalesForce(task.id)" #taskPushToSalesforce='ngForm'>
+        <input
+          class="m-4 h-10 w-80 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center"
+          type="text" formControlName="username" placeholder="Enter SalesForce Username">
+        <input
+          class="m-4 h-10 w-80 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center"
+          type="password" formControlName="password" placeholder="Enter SalesForce Password">
+        <input
+          class="m-4 h-10 w-80 rounded-md focus:border-green-500 focus:border-2 hover:placeholder-transparent focus:placeholder-transparent text-center"
+          type="text" formControlName="token" placeholder="Enter SalesForce Token">
+        
+          <button class=' font-semibold  h-8 w-32  rounded-2xl border-2 ' [disabled]="!taskPushToSalesforce.valid"
+            [ngClass]="{'opacity-50 cursor-not-allowed bg-white text-gray-700 border-red-500 ': !taskPushToSalesforce.valid, 'bg-white hover:text-green-500 hover:bg-gray-100 pr-2 text-green-500 border-green-500 ':taskPushToSalesforce.valid }"
+            [disabled]="!taskPushToSalesforce.valid" type="submit">
+            Add new task</button>
+        
+      </form>
+    </mat-expansion-panel>
   </div>
 </div>
-<form [formGroup]="newTask" (ngSubmit)="onNewTask()">
-  <br>
-  <label>
-    Create New Task<br>
-  </label>
-  <label>
-    task:
-    <input type="text" formControlName="task">
-  </label>
-  <label>
-    description:
-    <input type="text" formControlName="description">
-  </label>
-  <label>
-    deadline:
-    <input type="datetime-local" formControlName="deadline">
-  </label>
-  <button type="submit">Add new task</button>
-</form>

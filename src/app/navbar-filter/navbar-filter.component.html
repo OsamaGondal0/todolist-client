@@ -1,9 +1,23 @@
-<div>Filter:&nbsp;&nbsp;</div>
-<div>
-    <a href="#incomplete" [routerLink]="['/tasks']" [queryParams]="{filter:'incomplete'}" routerLinkActive="active">Incomplete&nbsp;&nbsp;</a>
+<nav class="bg-white m-2 shadow-xl rounded-2xl">
+    <div class='flex  mx-auto justify-between  items-center mb-4 p-1  shadow-xl rounded-2xl bg-green-50'>
+        <div class='flex space-x-3 items-center  pl-4'>
+            <a class="font-semibold text-grey-500 rounded-2xl p-4 mr-5 text-green-500  hover:bg-gray-300 bg-green-100" href={{domain}}>Home</a>
+        </div>
+        <div class='flex space-x-3 items-center  pl-4'>
+            <span class="font-semibold text-green-500">Filters:</span>
+            <a class="font-semibold p-4 hover:bg-blue-100 rounded-lg" [routerLink]="['/tasks']"
+                [queryParams]="{filter:'all'}" routerLinkActive="text-blue-500">All</a>
 
-    <a [routerLink]= "['/tasks']" [queryParams]="{filter:'completed'}" routerLinkActive="active"> Complete&nbsp;&nbsp;</a>
+            <a class="font-semibold pt-4 pb-4 hover:bg-blue-100 rounded-lg" [routerLink]="['/tasks']"
+                [queryParams]="{filter:'incomplete'}" routerLinkActive="text-blue-500">Incomplete</a>
 
-    <a [routerLink]= "['/tasks']" [queryParams]="{filter:'late'}" routerLinkActive="active"> Past Due&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
-</div>
-<div><button type="button" (click)="onLogout()">Log Out!</button></div>
+            <a class="font-semibold pt-4 pb-4 hover:bg-blue-100 rounded-lg" [routerLink]="['/tasks']"
+                [queryParams]="{filter:'completed'}" routerLinkActive="text-blue-500">Complete</a>
+
+            <a class="font-semibold pt-4 pb-4 hover:bg-blue-100 rounded-lg" [routerLink]="['/tasks']"
+                [queryParams]="{filter:'late'}" routerLinkActive="text-blue-500"> Past Due</a>
+        </div>
+        <button class="font-semibold text-grey-500 rounded-2xl p-4 mr-5 text-red-500  hover:bg-gray-300 bg-red-100"
+            type="button" (click)="onLogout()">Log Out!</button>
+    </div>
+</nav>

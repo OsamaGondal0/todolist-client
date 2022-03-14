@@ -14,10 +14,7 @@ import { Router, RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
-    LoginComponent
-  ],
-  exports: [
-    LoginComponent
+    LoginComponent,
   ],
   imports: [
     LoginRoutingModule,

@@ -12,7 +12,7 @@ export class LoggedInWithListGuard implements CanActivate {    // Prevent user t
     canActivate(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot) {
-            console.log('inside the loggedIN with list')
+            
         if (!localStorage.getItem('mainToken') ) {
             this.router.navigate(['login']);
             return false; // false means don't allow to further navigate to respective route
